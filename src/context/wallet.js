@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from "react";
 import PropTypes from "prop-types";
 
+import withLogger from "../utils/Log";
 import useThunkReducer from "../hook/useThunkReducer";
 import monerojs from "../libs/monero";
 
@@ -31,19 +32,6 @@ function walletReducer(state, action) {
       throw new Error(`Unhandled action type: ${action.type}`);
   }
 }
-
-const isProduction = () => process.env.NODE_ENV === "production";
-const isDevelopment = () => process.env.NODE_ENV === "development";
-
-const withLogger = (reducer) => (state, action) => {
-  const nextState = reducer(state, action);
-
-  if (isDevelopment()) {
-    console.log(action.type, state, nextState);
-  }
-
-  return nextState;
-};
 
 function WalletProvider({ children }) {
   const initialState = {
