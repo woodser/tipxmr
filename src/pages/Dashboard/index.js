@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useRouteMatch, Route, Link, Redirect } from "react-router-dom";
 import monerologo from "../../images/monero-symbol.png";
 import Overview from "./Overview";
@@ -13,10 +13,17 @@ function Dashboard() {
   const { start, stop } = useWalletSynchronisation();
   const liStyle = clsx(["transform", "hover:scale-110"]);
 
-  useEffect(() => {
+  const startSync = useCallback(() => {
     start();
+  }, []);
+  const stopSync = useCallback(() => {
+    stop();
+  }, []);
+
+  useEffect(() => {
+    startSync();
     return () => {
-      stop();
+      stopSync();
     };
   }, []);
 

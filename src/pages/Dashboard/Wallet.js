@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Progressbar, SyncBanner, Button } from "~/components";
-///import useWalletSynchronisation from "~/hook/useWalletSynchronisation";
+import useWalletSynchronisation from "~/hook/useWalletSynchronisation";
 import { useSyncState } from "~/context/sync";
 import { useWalletState } from "~/context/wallet";
 import { useStreamer } from "~/context/streamer";
@@ -15,6 +15,7 @@ function Wallet() {
     balance,
     unlockedBalance,
   } = useSyncState();
+  const { start, stop } = useWalletSynchronisation();
 
   const wallet = useWalletState();
   const [streamerConfig, updateStreamerConfig] = useStreamer();
@@ -33,11 +34,11 @@ function Wallet() {
 
   // start or stop sync
   function handleSync() {
-    /* if (isActive) {
+    if (isActive) {
       stop();
     } else {
       start();
-    } */
+    }
   }
 
   async function fillTable(txs) {
