@@ -17,31 +17,6 @@ export function useWalletSynchronisation() {
 
   progressRef.current = state.progress;
 
-  function onProgress(height, startHeight, endHeight, percentDone, message) {
-    const percentage = Math.floor(percentDone * 100);
-
-    if (progressRef.current !== percentage) {
-      dispatch({ type: "SET_PROGRESS", progress: percentage });
-    }
-
-    if (percentDone === 1) {
-      dispatch({ type: "SET_IS_DONE", isDone: true });
-    }
-  }
-
-  function onBalancesChanged(newBalance, newUnlockedBalance) {
-    if (balanceRef.current !== newBalance) {
-      dispatch({ type: "SET_BALANCE", balance: newBalance });
-    }
-
-    if (unlockedBalanceRef.current !== newUnlockedBalance) {
-      dispatch({
-        type: "SET_UNLOCKEDBALANCE",
-        unlockedBalance: newUnlockedBalance,
-      });
-    }
-  }
-
   useEffect(() => {
     listenerRef.current = new SynchronisationListener(
       onProgress,

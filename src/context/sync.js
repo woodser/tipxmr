@@ -36,6 +36,10 @@ function synchronisationReducer(state, action) {
       return { ...state, balance: action.balance };
     case "SET_UNLOCKEDBALANCE":
       return { ...state, unlockedBalance: action.unlockedBalance };
+    case "SET_LISTENER":
+      return { ...state, listener: action.listener };
+    case "REMOVE_LISTENER":
+      return { ...state, listener: null };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
@@ -48,6 +52,7 @@ function SyncProvider({ children }) {
     progress: 0,
     balance: 0,
     unlockedBalance: 0,
+    listener: null,
   };
   const [state, dispatch] = useThunkReducer(
     withLogger(synchronisationReducer),
@@ -122,7 +127,10 @@ function onBalancesChanged(newBalance, newUnlockedBalance) {
 }
 
 function startSync(wallet, restoreHeight) {
+  const listener = new SynchronisationListener(onProgress, onBalancesChanged);
+  wallet.addListener(listener);
   return async (dispatch) => {
+    dispatch({ type: "SET_LISTENER", listener });
     dispatch({ type: "SET_IS_DONE", isDone: false });
     dispatch({ type: "SET_IS_ACTIVE", isActive: true });
     await wallet.setSyncHeight(restoreHeight);
@@ -131,9 +139,12 @@ function startSync(wallet, restoreHeight) {
 }
 
 function stopSync(wallet) {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     await wallet.stopSyncing();
+    const { listener } = getState();
+    wallet.removeListener(listener);
     dispatch({ type: "SET_IS_ACTIVE", isActive: false });
+    dispatch({ type: "REMOVE_LISTENER" });
   };
 }
 
