@@ -42,18 +42,6 @@ export function useWalletSynchronisation() {
     }
   }
 
-  async function start() {
-    dispatch({ type: "SET_IS_DONE", isDone: false });
-    dispatch({ type: "SET_IS_ACTIVE", isActive: true });
-    await wallet.wallet.setSyncHeight(wallet.restoreHeight);
-    await wallet.wallet.startSyncing();
-  }
-
-  async function stop() {
-    await wallet.wallet.stopSyncing();
-    dispatch({ type: "SET_IS_ACTIVE", isActive: false });
-  }
-
   useEffect(() => {
     listenerRef.current = new SynchronisationListener(
       onProgress,

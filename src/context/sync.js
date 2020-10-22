@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import PropTypes from "prop-types";
+import useThunkReducer from "../hook/useThunkReducer";
 import { MoneroWalletListener } from "monero-javascript";
 
 class SynchronisationListener extends MoneroWalletListener {
@@ -87,6 +88,53 @@ function useSyncUpdate() {
 
 function useSync() {
   return [useSyncState(), useSyncUpdate()];
+}
+
+function onProgress(height, startHeight, endHeight, percentDone, message) {
+  return (dispatch, getState) => {
+    const percentage = Math.floor(percentDone * 100);
+    const { progress } = getState();
+
+    if (progress !== percentage) {
+      dispatch({ type: "SET_PROGRESS", progress: percentage });
+    }
+
+    if (percentDone === 1) {
+      dispatch({ type: "SET_IS_DONE", isDone: true });
+    }
+  };
+}
+
+function onBalancesChanged(newBalance, newUnlockedBalance) {
+  return (dispatch, getState) => {
+    const { balance, unlockedBalance } = getState();
+    if (balance !== newBalance) {
+      dispatch({ type: "SET_BALANCE", balance: newBalance });
+    }
+
+    if (unlockedBalance !== newUnlockedBalance) {
+      dispatch({
+        type: "SET_UNLOCKEDBALANCE",
+        unlockedBalance: newUnlockedBalance,
+      });
+    }
+  };
+}
+
+function startSync(wallet, restoreHeight) {
+  return async (dispatch) => {
+    dispatch({ type: "SET_IS_DONE", isDone: false });
+    dispatch({ type: "SET_IS_ACTIVE", isActive: true });
+    await wallet.setSyncHeight(restoreHeight);
+    await wallet.startSyncing();
+  };
+}
+
+function stopSync(wallet) {
+  return async (dispatch) => {
+    await wallet.stopSyncing();
+    dispatch({ type: "SET_IS_ACTIVE", isActive: false });
+  };
 }
 
 export { SyncProvider, useSyncState, useSyncUpdate, useSync };
