@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import PropTypes from "prop-types";
 import useThunkReducer from "../hook/useThunkReducer";
 import { MoneroWalletListener } from "monero-javascript";
+import withLogger from "../utils/Log";
 
 class SynchronisationListener extends MoneroWalletListener {
   constructor(onProgress, onBalancesChanged) {
@@ -127,9 +128,21 @@ function onBalancesChanged(newBalance, newUnlockedBalance) {
 }
 
 function startSync(wallet, restoreHeight) {
-  const listener = new SynchronisationListener(onProgress, onBalancesChanged);
-  wallet.addListener(listener);
   return async (dispatch) => {
+    // function aliases
+    function dispatchProgress(...args) {
+      dispatch(onProgress(...args));
+    }
+
+    function dispatchOnBalanceChanged(...args) {
+      dispatch(onBalancesChanged(...args));
+    }
+
+    const listener = new SynchronisationListener(
+      dispatchProgress,
+      dispatchOnBalanceChanged
+    );
+    wallet.addListener(listener);
     dispatch({ type: "SET_LISTENER", listener });
     dispatch({ type: "SET_IS_DONE", isDone: false });
     dispatch({ type: "SET_IS_ACTIVE", isActive: true });
@@ -148,4 +161,11 @@ function stopSync(wallet) {
   };
 }
 
-export { SyncProvider, useSyncState, useSyncUpdate, useSync };
+export {
+  SyncProvider,
+  useSyncState,
+  useSyncUpdate,
+  useSync,
+  startSync,
+  stopSync,
+};

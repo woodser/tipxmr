@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouteMatch, Route, Link, Redirect } from "react-router-dom";
 import monerologo from "../../images/monero-symbol.png";
 import Overview from "./Overview";
@@ -6,10 +6,19 @@ import Wallet from "./Wallet";
 import Settings from "./Settings";
 import AnimationSettings from "./AnimationSettings";
 import clsx from "clsx";
+import useWalletSynchronisation from "~/hook/useWalletSynchronisation";
 
 function Dashboard() {
   const { path, url } = useRouteMatch();
+  const { start, stop } = useWalletSynchronisation();
   const liStyle = clsx(["transform", "hover:scale-110"]);
+
+  useEffect(() => {
+    start();
+    return () => {
+      stop();
+    };
+  }, []);
 
   return (
     <div className="flex flex-grow bg-xmrgray-darker">
