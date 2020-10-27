@@ -5,9 +5,13 @@ export const streamerState = atom({
   default: {},
 });
 
-export const walletState = atom({
-  key: "wallet",
-  default: null,
+export const daemonConfigurationState = atom({
+  key: "remoteNodeUri",
+  default: {
+    uri: "http://localhost:38081",
+    username: "superuser",
+    password: "abctesting123",
+  },
 });
 
 export const restoreHeightState = atom({
