@@ -14,3 +14,9 @@ export function onGetAnimationConfig(callback) {
     callback(animation);
   });
 }
+
+export function onPaymentConfirmation(callback) {
+  socketAnimation.on("donationConfirmation", (confirmation) => {
+    callback(confirmation);
+  });
+}

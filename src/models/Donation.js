@@ -7,6 +7,7 @@ const defaults = {
   subaddress: "",
   userName: "",
   displayName: "",
+  animationSocketId: "",
 };
 
 function from(options) {
@@ -45,6 +46,10 @@ function setDisplayName(displayName, donation) {
   return Object.assign({}, donation, { displayName });
 }
 
+function setAnimationSocketId(animationSocketId, donation) {
+  return Object.assign({}, donation, { animationSocketId });
+}
+
 export default {
   from,
   setDonor,
@@ -55,4 +60,5 @@ export default {
   setSubaddress,
   setUserName,
   setDisplayName,
+  setAnimationSocketId,
 };

@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTransition, animated } from "react-spring";
-import { useRecoilValue } from "recoil";
-import { streamerState } from "~/store/atom";
 import {
   emitGetAnimationConfig,
   onGetAnimationConfig,
+  onPaymentConfirmation,
 } from "~/libs/socket_animation";
 import clsx from "clsx";
 
@@ -52,6 +51,8 @@ function Animation() {
   const [sound, setSound] = useState(null);
   const [goal, setGoal] = useState(0);
 
+  const [donation, setDonation] = useState(null);
+
   const [donor, setDonor] = useState("Grischa");
   const [amount, setAmount] = useState(12);
   const [message, setMessage] = useState(
@@ -62,13 +63,21 @@ function Animation() {
   const percentage = (goalProgress / goal) * 100;
   const percentageString = percentage + "%";
 
+  // load the animationConfig
   useEffect(() => {
     emitGetAnimationConfig(userName);
     onGetAnimationConfig(setAnimationConfig);
   }, [userName]);
 
+  // get new donations
+  useEffect(() => {
+    onPaymentConfirmation(setDonation);
+  }, []);
+
+  console.log("donation: ", donation);
   useEffect(() => {
     if (animationConfig) {
+      console.log(animationConfig);
       setTime(1000 / animationConfig.secondPrice);
       setFontColor(animationConfig.fontColor);
       setFontSize(animationConfig.fontSize);
@@ -82,9 +91,6 @@ function Animation() {
       }, 2000);
     }
   }, [animationConfig]);
-
-  // const streamerConfig = useRecoilValue(streamerState);
-  // console.log("Animation streamer config: ", streamerConfig);
 
   const messageTransitions = useTransition(showMessage, null, {
     from: { opacity: 0 },

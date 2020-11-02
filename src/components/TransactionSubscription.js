@@ -39,6 +39,8 @@ function TransactionSubscription() {
             donatorSocketId: donationsInfo.donatorSocketId,
             userName: donationsInfo.userName,
             displayName: donationsInfo.displayName,
+            animationSocketId:
+              streamerConfig.animationSettings.animationSocketId,
             duration:
               (parseAmount(output.amount) -
                 streamerConfig.animationSettings.charPrice *
@@ -47,6 +49,7 @@ function TransactionSubscription() {
           });
           dispatcher.appendToDonationsQueue(newDonation);
           dispatcher.appendToDonationsHistory(newDonation);
+          console.log("newDonation Object:", newDonation);
           socketio.emitPaymentRecieved(newDonation);
         }
       });
