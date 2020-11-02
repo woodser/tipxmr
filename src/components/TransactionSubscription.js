@@ -49,6 +49,10 @@ function TransactionSubscription() {
           });
           dispatcher.appendToDonationsQueue(newDonation);
           dispatcher.appendToDonationsHistory(newDonation);
+          console.log(
+            "streamerAnimationSettings: ",
+            streamerConfig.animationSettings
+          );
           console.log("newDonation Object:", newDonation);
           socketio.emitPaymentRecieved(newDonation);
         }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useTransition, animated } from "react-spring";
@@ -51,7 +51,8 @@ function Animation() {
   const [sound, setSound] = useState(null);
   const [goal, setGoal] = useState(0);
 
-  const [donation, setDonation] = useState(null);
+  const [donation, setDonation] = useState({});
+  const donationRef = useRef({});
 
   const [donor, setDonor] = useState("Grischa");
   const [amount, setAmount] = useState(12);
@@ -71,10 +72,18 @@ function Animation() {
 
   // get new donations
   useEffect(() => {
-    onPaymentConfirmation(setDonation);
-  }, []);
+    console.log("Got a new donation");
+    onPaymentConfirmation(paymentConfirmation);
+    console.log("New donation: ", donation);
+  });
 
-  console.log("donation: ", donation);
+  function paymentConfirmation(confirmation) {
+    console.log("confirmation", confirmation);
+    // setAmount(confirmation.amount);
+  }
+
+  console.log("donation: ", donationRef.current);
+
   useEffect(() => {
     if (animationConfig) {
       console.log(animationConfig);
