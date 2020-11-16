@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Toggle, Button } from "~/components";
 import QR from "~/images/test-qr.png";
-import monerojs from "~/libs/monero";
+import { useRecoilValue } from "recoil";
+import { streamerState } from "~/store/atom";
 
 function Payment() {
   // TODO props needed: subaddress, getSubaddress
@@ -9,6 +10,10 @@ function Payment() {
   const [monthly, setMonthly] = useState(false);
   const [isPremium, setIsPremium] = useState(true);
   const [amount, setAmount] = useState(0);
+  const streamerConfig = useRecoilValue(streamerState);
+  const [subaddress, setSubaddress] = useState(
+    streamerConfig.subscription.subaddress
+  );
 
   useEffect(() => {
     const basePrice = isPremium ? 0.09 : 0.009;
@@ -32,9 +37,6 @@ function Payment() {
 
   // payment handeling, work in progress
   // Hard Coded for testing
-  const [subaddress, setSubaddress] = useState(
-    "45ZoRheLkX2H3UjYSFs2wP9yo739nQ7irZA2pX6MQr5FeebkC2n8hABYGQRCcrzJ2AaGbNUyR4EfvanP1G2H5DSrMWi97Sk"
-  ); // will be props passed down
   const [qrCode, setQrCode] = useState(QR);
   // const [paymentUri, setPaymentUri] = useState(null);
 
@@ -126,9 +128,9 @@ function Success() {
 }
 
 function Invoice() {
-  const [isPayed, setIsPayed] = useState(true);
+  const [isPayed, setIsPayed] = useState(false);
   return (
-    <div className="flex flex-grow self-center justify-center">
+    <div className="flex flex-grow my-6 self-center justify-center">
       <div className="bg-gray-200 text-xmrgray-darker rounded">
         <div className="rounded border-4 border-dashed border-xmrorange p-10 m-6">
           {isPayed ? <Success /> : <Payment />}
