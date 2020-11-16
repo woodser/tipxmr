@@ -3,6 +3,7 @@ import { Toggle, Button } from "~/components";
 import QR from "~/images/test-qr.png";
 import { useRecoilValue } from "recoil";
 import { streamerState } from "~/store/atom";
+import monerojs from "~/libs/monero";
 
 function Payment() {
   // TODO props needed: subaddress, getSubaddress
@@ -36,9 +37,8 @@ function Payment() {
   }
 
   // payment handeling, work in progress
-  // Hard Coded for testing
   const [qrCode, setQrCode] = useState(QR);
-  // const [paymentUri, setPaymentUri] = useState(null);
+  const [paymentUri, setPaymentUri] = useState(null);
 
   // useEffect(() => {
   //   if (subaddress === null) {
@@ -46,33 +46,33 @@ function Payment() {
   //   }
   // }, [getSubaddress, subaddress]);
 
-  // // generete QR Code on subaddress change
-  // useEffect(() => {
-  //   const paymentUri = createPaymentUri();
-  //   async function generateQrCode() {
-  //     if (subaddress !== null) {
-  //       const qrcode = await monerojs.generateQrCode(paymentUri);
-  //       setQrcode(qrcode);
-  //     }
-  //   }
-  //   generateQrCode();
-  // }, [subaddress, createPaymentUri]);
+  // generete QR Code on subaddress change
+  useEffect(() => {
+    const paymentUri = createPaymentUri();
+    async function generateQrCode() {
+      if (subaddress !== null) {
+        const qrcode = await monerojs.generateQrCode(paymentUri);
+        setQrCode(qrcode);
+      }
+    }
+    generateQrCode();
+  }, [subaddress, createPaymentUri]);
 
   // function handleClick(e) {
   //   e.stopPropagation();
   //   e.nativeEvent.stopImmediatePropagation();
   // }
 
-  // function createPaymentUri() {
-  //   let uri;
-  //   if (total > 0) {
-  //     uri = "monero:" + subaddress + "?tx_amount=" + total;
-  //   } else {
-  //     uri = "monero:" + subaddress;
-  //   }
-  //   setPaymentUri(uri);
-  //   return uri;
-  // }
+  function createPaymentUri() {
+    let uri;
+    if (amount > 0) {
+      uri = "monero:" + subaddress + "?tx_amount=" + amount;
+    } else {
+      uri = "monero:" + subaddress;
+    }
+    setPaymentUri(uri);
+    return uri;
+  }
 
   return (
     <div className="text-center">
