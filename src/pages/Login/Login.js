@@ -122,6 +122,7 @@ function Login() {
   const [userNameError, setUserNameError] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     if (isChecked && !isLoading) {
@@ -140,25 +141,16 @@ function Login() {
 
   useEffect(() => {
     // if 25 words are reached
-    if (isValidMnemoicLength(seed) && !isWalletOpen && !isPending) {
+    if (
+      isValidMnemoicLength(seed) &&
+      !isWalletOpen &&
+      !isPending &&
+      !isLoggedIn
+    ) {
       console.log("25 words reached");
       login();
-      dispatch(openFromSeed(seed));
     }
-  }, [dispatcher, isWalletOpen, isPending, dispatch, seed]);
-
-  // Das streamer.restoreHeight, weil er erst weiterleiten soll,
-  // wenn die Streamer Config vom Backend gesendet wurde
-  if (
-    isWalletOpen &&
-    isResolved &&
-    streamer.userName &&
-    streamer.userName !== "" &&
-    !userNameNotSet
-  ) {
-    console.log("Redirected");
-    return <Redirect to="/dashboard" />;
-  }
+  }, [isWalletOpen, isPending, isLoggedIn, seed]);
 
   function login() {
     const hashedSeed = getMnemonicHash(seed);
@@ -168,6 +160,8 @@ function Login() {
       if (response.type === "success") {
         setUserNameNotSet(false);
         dispatcher.updateStreamer(response.data);
+        dispatch(openFromSeed(seed));
+        setIsLoggedIn(true);
       } else {
         // 2 cases: userName taken or no userName set
         // no userName set
@@ -211,10 +205,24 @@ function Login() {
     setSeed(event.target.value);
   }
 
+  // Das streamer.restoreHeight, weil er erst weiterleiten soll,
+  // wenn die Streamer Config vom Backend gesendet wurde
+  if (
+    isWalletOpen &&
+    isResolved &&
+    streamer.userName &&
+    streamer.userName !== "" &&
+    !userNameNotSet &&
+    !wallet.error
+  ) {
+    console.log("Redirected");
+    return <Redirect to="/dashboard" />;
+  }
+
   // TODO Verify username input (lenght.., form errors)
   return (
-    <div className="flex flex-row flex-1">
-      <div className="flex-8">
+    <div className="flex flex-col flex-1">
+      <div className="flex-1">
         <h2 className="text-2xl text-center">
           Your Seed{" "}
           <span role="img" aria-label="wallet">
@@ -239,32 +247,34 @@ function Login() {
             Create New Wallet
           </Button>
         </div>
-        <div className="flex justify-center mt-3 space-x-4">
+        <div className="flex flex-col justify-center mt-3 space-x-4">
           <textarea
             className="select-all outline-none text-gray-200 text-justify border-4 border-dashed border-xmrorange-lighter p-5 bg-xmrgray-darker rounded"
             id="seed"
             name="seed"
             rows="4"
-            cols="50"
+            cols="40"
             placeholder="Open your wallet by entering your 25 seed words..."
-            value={isLoading ? defaultStateSeed : seed}
+            value={seed}
             style={{ resize: "none" }}
             onChange={handleSeedChanged}
           />
           {isPending && !creationMode ? (
             <Loading text="Loading your wallet" />
           ) : null}
+          {wallet.error ? (
+            <p className="text-xmrorange mt-2">{wallet.error.message}</p>
+          ) : null}
+          {!isLoading && (creationMode || userNameNotSet) ? (
+            <PickUserName
+              onChange={handleUserNameChange}
+              isLoading={isLoading}
+              userNameError={userNameError}
+            />
+          ) : null}
         </div>
-
-        {!isLoading && (creationMode || userNameNotSet) ? (
-          <PickUserName
-            onChange={handleUserNameChange}
-            isLoading={isLoading}
-            userNameError={userNameError}
-          />
-        ) : null}
       </div>
-      <div className="flex-3 self-center border-4 border-red-600 p-6 text-lg space-y-4 rounded">
+      <div className="flex-1 self-center border-4 border-red-600 p-6 text-lg space-y-4 rounded">
         <div className="text-center">
           <span role="img" aria-label="lightbulp" className="text-4xl">
             💡
