@@ -58,18 +58,27 @@ function Login({ seed, setSeed }) {
   );
 }
 
-function CreateAccount({
-  seed,
-  handleSeedChanged,
-  isLoading,
-  handleCreateWallet,
-}) {
+function CreateAccount({ seed, handleSeedChanged }) {
   const [language, setLanguage] = useState("English");
+  const [isLoading, setIsLoading] = useState(false);
+
+  function createWallet(lang) {
+    setIsLoading(true);
+    monerojs
+      .createWallet(lang)
+      .then(monerojs.getMnemonic)
+      .then(setSeed)
+      .then(() => setIsLoading(false));
+  }
+
+  function handleCreateWallet() {
+    createWallet(language);
+  }
 
   return (
     <div className="flex flex-col mt-16 ">
       <div className="flex flex-1 justify-center">
-        <LanguagePicker language={} />
+        <LanguagePicker language={language} setLanguage={setLanguage} />
       </div>
       <div className="flex flex-1 justify-center mt-3 space-x-4">
         <textarea
@@ -110,7 +119,6 @@ function UnifiedLogin() {
   const [creationMode, setCreationMode] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Das streamer.restoreHeight, weil er erst weiterleiten soll,
   // wenn die Streamer Config vom Backend gesendet wurde
@@ -119,21 +127,8 @@ function UnifiedLogin() {
     return <Redirect to="/dashboard" />;
   }
 
-  function createWallet(lang) {
-    setIsLoading(true);
-    monerojs
-      .createWallet(lang)
-      .then(monerojs.getMnemonic)
-      .then(setSeed)
-      .then(() => setIsLoading(false));
-  }
-
   function handleToggleChanged() {
     setCreationMode(!creationMode);
-  }
-
-  function handleCreateWallet() {
-    createWallet(language);
   }
 
   function handleSeedChanged(event) {
@@ -150,12 +145,7 @@ function UnifiedLogin() {
         className="my-8"
       ></Toggle>
       {creationMode ? (
-        <CreateAccount
-          seed={seed}
-          handleSeedChanged={handleSeedChanged}
-          isLoading={isLoading}
-          handleCreateWallet={handleCreateWallet}
-        />
+        <CreateAccount seed={seed} handleSeedChanged={handleSeedChanged} />
       ) : (
         <Login seed={seed} setSeed={setSeed} />
       )}

@@ -39,7 +39,7 @@ function convertFlag(language) {
   }
 }
 
-function LanguagePicker({ language, onChange }) {
+function LanguagePicker({ language, setLanguage }) {
   // Build list of language items, alphabetically sorted
   const languageItems = languages.map((language) => {
     return (
@@ -48,6 +48,10 @@ function LanguagePicker({ language, onChange }) {
       </option>
     );
   });
+
+  function handleLanguageChange(event) {
+    setLanguage(event.target.value);
+  }
 
   return (
     <div className="text-center mt-4">
@@ -61,7 +65,7 @@ function LanguagePicker({ language, onChange }) {
         id="languages"
         name="languages"
         value={language}
-        onChange={onChange}
+        onChange={handleLanguageChange}
         className="ml-4 p-2 appearance-none bg-xmrgray-darker border border-xmrorange py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:border-gray-500"
       >
         {languageItems}
