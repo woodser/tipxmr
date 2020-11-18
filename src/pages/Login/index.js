@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Login from "./Login";
+import UnifiedLogin from "./UnifiedLogin";
 import Info from "./Info";
 
 function Signup() {
@@ -10,7 +11,7 @@ function Signup() {
       {showInfo ? (
         <Info stateSetterInfo={setShowInfo} stateSetterCreate={setShowLogin} />
       ) : null}
-      {showLogin ? <Login /> : null}
+      {showLogin ? <UnifiedLogin /> : null}
     </div>
   );
 }

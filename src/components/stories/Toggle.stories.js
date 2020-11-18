@@ -6,7 +6,7 @@ export default {
   component: Toggle,
 };
 
-const Template = (args) => <Toggle {...args}>Here is a text</Toggle>;
+const Template = (args) => <Toggle {...args} />;
 
 export const Checked = Template.bind({});
 Checked.args = {

@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 
-function Toggle({ isChecked, onClick, children }) {
+function Toggle({ isChecked, onClick, text, textLeft, textRight }) {
   const toggleStyles = clsx(
     "absolute",
     "block",
@@ -33,21 +33,35 @@ function Toggle({ isChecked, onClick, children }) {
   );
   return (
     <div>
-      <div className="relative block w-10 mx-auto align-middle select-none transition duration-200 ease-in">
-        <input
-          type="checkbox"
-          name="toggle"
-          id="toggle"
-          className={toggleStyles}
-          onClick={onClick}
-        />
-        <label htmlFor="toggle" className={labelStyles}></label>
+      <div className="flex">
+        <label
+          htmlFor="toggle"
+          className="flex-1 text-s text-gray-200 block text-right mx-4"
+        >
+          {textLeft}
+        </label>
+        <div className="relative block w-10 mx-auto align-middle select-none transition duration-200 ease-in">
+          <input
+            type="checkbox"
+            name="toggle"
+            id="toggle"
+            className={toggleStyles}
+            onClick={onClick}
+          />
+          <label htmlFor="toggle" className={labelStyles}></label>
+        </div>
+        <label
+          htmlFor="toggle"
+          className="flex-1 text-s text-gray-200 block text-left mx-4"
+        >
+          {textRight}
+        </label>
       </div>
       <label
         htmlFor="toggle"
-        className="text-xs text-gray-200 block text-center mt-3"
+        className="text-s text-gray-200 block text-center"
       >
-        {children}
+        {text}
       </label>
     </div>
   );
@@ -55,7 +69,9 @@ function Toggle({ isChecked, onClick, children }) {
 Toggle.propTypes = {
   isChecked: PropTypes.bool,
   onClick: PropTypes.func,
-  children: PropTypes.node,
+  text: PropTypes.string,
+  textLeft: PropTypes.string,
+  textRight: PropTypes.string,
 };
 
 export default Toggle;

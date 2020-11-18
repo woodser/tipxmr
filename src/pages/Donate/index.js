@@ -102,9 +102,8 @@ function Donate() {
           <Toggle
             isChecked={showLivestream}
             onClick={() => setShowLivestream(!showLivestream)}
-          >
-            Watch the stream
-          </Toggle>
+            text="Watch the stream"
+          />
           <div className="mt-3 mx-auto">
             <IsOnlineBadge isOnline={streamer.isOnline} />
           </div>

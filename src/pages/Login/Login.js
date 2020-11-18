@@ -110,16 +110,19 @@ function Login() {
   // states
   const [language, setLanguage] = useState(defaultLanguage);
   const [seed, setSeed] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [userName, setUserName] = useState(null);
+
   const dispatcher = useRecoilValue(dispatcherState);
   const streamer = useRecoilValue(streamerState);
   const [wallet, dispatch] = useWallet();
+
+  const [userNameError, setUserNameError] = useState("");
+  const [creationMode, setCreationMode] = useState(false);
+  const [userNameNotSet, setUserNameNotSet] = useState(false);
   const { isPending, isResolved } = wallet.status;
   const isWalletOpen = !isNil(wallet.wallet) && isNil(wallet.error);
-  const [creationMode, setCreationMode] = useState(false);
-  const [userName, setUserName] = useState(null);
-  const [userNameNotSet, setUserNameNotSet] = useState(false);
-  const [userNameError, setUserNameError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -161,7 +164,9 @@ function Login() {
         setUserNameNotSet(false);
         dispatcher.updateStreamer(response.data);
         dispatch(openFromSeed(seed));
-        setIsLoggedIn(true);
+        if (!wallet.error) {
+          setIsLoggedIn(true);
+        }
       } else {
         // 2 cases: userName taken or no userName set
         // no userName set
@@ -169,10 +174,12 @@ function Login() {
           setUserNameNotSet(true);
           setUserNameError("No Username was set.");
           console.error("No Username was set.");
+          setIsLoggedIn(false);
         } else if (response.error === "userNameTaken") {
           setUserNameNotSet(true);
           setUserNameError("Username is already taken.");
           console.error("Username is already taken.");
+          setIsLoggedIn(false);
         }
       }
     });

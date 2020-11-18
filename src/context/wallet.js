@@ -108,6 +108,7 @@ function useWallet() {
 
 function openFromSeed(seed) {
   return (dispatch) => {
+    dispatch({ type: actionTypes.reset }); // reset before, there mayy be an error otherwise
     dispatch({ type: actionTypes.go });
     monerojs
       .openWalletFromSeed(seed)
