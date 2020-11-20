@@ -58,9 +58,11 @@ function Login({ seed, setSeed }) {
   );
 }
 
-function CreateAccount({ seed, handleSeedChanged }) {
+function CreateAccount({ seed, setSeed, handleSeedChanged }) {
   const [language, setLanguage] = useState("English");
   const [isLoading, setIsLoading] = useState(false);
+  const [userName, setUserName] = useState(null);
+  const [userNameError, setUserNameError] = useState("");
 
   function createWallet(lang) {
     setIsLoading(true);
@@ -73,6 +75,10 @@ function CreateAccount({ seed, handleSeedChanged }) {
 
   function handleCreateWallet() {
     createWallet(language);
+  }
+
+  function handleUserNameChange(event) {
+    setUserName(event.target.value);
   }
 
   return (
@@ -103,13 +109,17 @@ function CreateAccount({ seed, handleSeedChanged }) {
           Create New Wallet
         </Button>
       </div>
+      <PickUserName
+        onChange={handleUserNameChange}
+        isLoading={isLoading}
+        userNameError={userNameError}
+      />
     </div>
   );
 }
 
 function UnifiedLogin() {
   const [seed, setSeed] = useState("");
-  const [userName, setUserName] = useState(null);
 
   const dispatcher = useRecoilValue(dispatcherState);
   const streamer = useRecoilValue(streamerState);
@@ -145,7 +155,11 @@ function UnifiedLogin() {
         className="my-8"
       ></Toggle>
       {creationMode ? (
-        <CreateAccount seed={seed} handleSeedChanged={handleSeedChanged} />
+        <CreateAccount
+          seed={seed}
+          setSeed={setSeed}
+          handleSeedChanged={handleSeedChanged}
+        />
       ) : (
         <Login seed={seed} setSeed={setSeed} />
       )}
